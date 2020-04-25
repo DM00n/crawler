@@ -1,15 +1,13 @@
-//
-// Created by dmoon on 4/1/20.
-//
+// Copyright 2018 Your Name <your_email>
 
-#ifndef CRAWLER_HEADER_HPP
-#define CRAWLER_HEADER_HPP
+#ifndef INCLUDE_HEADER_HPP_
+#define INCLUDE_HEADER_HPP_
 
 #include <string>
 #include <boost/asio/buffers_iterator.hpp>
 #include <boost/program_options.hpp>
 #include <boost/beast.hpp>
-#include "gumbo.h"
+#include <gumbo.h>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
@@ -25,14 +23,14 @@
 #include <thread>
 #include <condition_variable>
 #include <fstream>
-#include "root_certificate.h"
+#include <root_certificate.h>
 
 struct URL_with_depth {
     std::string url;
     unsigned depth;
 };
 
-struct URL_with_body{
+struct URL_with_body {
     std::string url;
     std::string body;
 };
@@ -54,7 +52,7 @@ public:
 
     std::string get_target_from_link(const std::string &str);
 
-    void search_for_img(GumboNode *node, const std::string& url);
+    void search_for_img(GumboNode *node, const std::string &url);
 
     void networking();
 
@@ -67,7 +65,9 @@ public:
     std::string http_downloader(std::string port, std::string url);
 
     std::string https_downloader(std::string port, std::string url);
+
 private:
+
     std::vector<std::string> _images;
     std::vector<std::string> _unique_links;
     std::vector<std::thread> _net_threads;
@@ -88,4 +88,4 @@ private:
     bool _pars_work;
 };
 
-#endif //CRAWLER_HEADER_HPP
+#endif  // INCLUDE_HEADER_HPP_

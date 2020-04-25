@@ -1,10 +1,10 @@
-//
-// Created by dmoon on 4/1/20.
-//
-#include "header.hpp"
+// Copyright 2018 Your Name <your_email>
 
-Crawler::Crawler(const std::string &url, unsigned depth, unsigned network_threads,
-                 unsigned parser_threads, std::string output) :
+#include "header.h"
+
+Crawler::Crawler(const std::string &url, unsigned depth,
+        unsigned network_threads,
+        unsigned parser_threads, std::string output) :
         _url(url), _depth(depth), _network_threads(network_threads),
         _parser_threads(parser_threads), _output(std::move(output)) {
     _unique_links.push_back(url);
@@ -30,7 +30,8 @@ void Crawler::make_link_vector(const std::string &url, unsigned depth) {
         std::vector<std::string>::iterator it1, it2;
         cs.lock();
         for (it1 = tmp.begin(); it1 != tmp.end(); ++it1) {
-            for (it2 = _unique_links.begin(); it2 != _unique_links.end(); ++it2) {
+            for (it2 = _unique_links.begin();
+            it2 != _unique_links.end(); ++it2){
                 if (*it1 == *it2) break;
             }
             if (it2 == _unique_links.end()) {
@@ -69,7 +70,8 @@ std::string Crawler::get_target_from_link(const std::string &str) {
     auto start = str.rfind("//");
     auto end = str.find('/', start + 2);
     if (end == std::string::npos) return "/";
-    else {
+    else
+    {
         std::string s(str, end, std::string::npos);
         return s;
     }
@@ -102,7 +104,8 @@ void Crawler::printer() {
         return;
     }
     if (_images.empty()) fout << "no images found" << std::endl;
-    else {
+    else
+    {
         unsigned count = 1;
         for (auto const &i : _images) {
             fout << count << " - " << i << std::endl;
@@ -264,7 +267,8 @@ std::string Crawler::https_downloader(std::string port, std::string url) {
     boost::beast::http::request<boost::beast::http::string_body>
             request{boost::beast::http::verb::get, target, 11};
     request.set(boost::beast::http::field::host, host);
-    request.set(boost::beast::http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+    request.set(boost::beast::http::field::user_agent,
+            BOOST_BEAST_VERSION_STRING);
     boost::beast::http::write(stream, request);
     boost::beast::flat_buffer buff;
     boost::beast::http::response<boost::beast::http::dynamic_body> res;
@@ -275,7 +279,6 @@ std::string Crawler::https_downloader(std::string port, std::string url) {
 }
 
 int main(int argc, char **argv) {
-
     boost::program_options::options_description desc("asd");
     desc.add_options()
             ("url", boost::program_options::value<std::string>())
@@ -285,7 +288,8 @@ int main(int argc, char **argv) {
             ("output", boost::program_options::value<std::string>());
     boost::program_options::variables_map vm;
     try {
-        boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
+        boost::program_options::store(boost::program_options::
+            parse_command_line(argc, argv, desc), vm);
         boost::program_options::notify(vm);
     }
     catch (boost::program_options::error &e) {
