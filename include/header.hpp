@@ -67,7 +67,6 @@ public:
     std::string https_downloader(std::string port, std::string url);
 
 private:
-
     std::vector<std::string> _images;
     std::vector<std::string> _unique_links;
     std::vector<std::thread> _net_threads;
