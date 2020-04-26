@@ -25,6 +25,22 @@
 #include <fstream>
 #include <root_certificate.h>
 
+const char HTTP_PORT[] = "80";
+const char HTTPS_PORT[] = "443";
+const char HTTP[] = "http";
+const char ERROR[] = "ERROR";
+const char HTTP_COLON[] = "http:";
+const char HTTP_COLON_DSLASH[] = "http://";
+const char HTTPS_COLON[] = "https:";
+const char HTTPS[] = "https";
+const char DSLASH[] = "//";
+const char SLASH = '/';
+const char SPACE_DASH_SPACE[] = " - ";
+const char HREF[] = "href";
+const char ERR_OPEN_FILE[] = "error opening output file!";
+const char NO_IMAGES[] = "no images found";
+const char SRC[] = "src";
+
 struct URL_with_depth {
     std::string url;
     unsigned depth;

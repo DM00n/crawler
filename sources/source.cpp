@@ -20,8 +20,8 @@ void Crawler::make_link_vector(const std::string &url, unsigned depth) {
         if (depth > _depth) return;
         std::string port = get_port_from_link(url);
         std::string body;
-        if (port == "80") body = http_downloader(port, url);
-        if (port == "443") body = https_downloader(port, url);
+        if (port == HTTP_PORT) body = http_downloader(port, url);
+        if (port == HTTPS_PORT) body = https_downloader(port, url);
         GumboOutput *output = gumbo_parse(body.c_str());
         std::vector<std::string> tmp;
         search_for_links(output->root, &tmp);
@@ -52,24 +52,24 @@ void Crawler::make_link_vector(const std::string &url, unsigned depth) {
 }
 
 std::string Crawler::get_host_from_link(const std::string &str) {
-    auto start = str.rfind("//");
+    auto start = str.rfind(DSLASH);
     auto end = str.find('/', start + 2);
     return str.substr(start + 2, end - start - 2);
 }
 
 std::string Crawler::get_port_from_link(const std::string &str) {
-    if (str.substr(0, 4) == "http") {
-        if (str.substr(0, 5) == "https") return "443";
-        if (str.substr(0, 5) == "http:") return "80";
-        return "ERROR";
+    if (str.substr(0, 4) == HTTP) {
+        if (str.substr(0, 5) == HTTPS) return HTTPS_PORT;
+        if (str.substr(0, 5) == HTTP_COLON) return HTTP_PORT;
+        return ERROR;
     }
-    return "ERROR";
+    return ERROR;
 }
 
 std::string Crawler::get_target_from_link(const std::string &str) {
-    auto start = str.rfind("//");
-    auto end = str.find('/', start + 2);
-    if (end == std::string::npos) return "/";
+    auto start = str.rfind(DSLASH);
+    auto end = str.find(SLASH, start + 2);
+    if (end == std::string::npos) return std::string{SLASH};
     else
     {
         std::string s(str, end, std::string::npos);
@@ -83,9 +83,9 @@ void Crawler::search_for_links(GumboNode *node, std::vector<std::string> *v) {
     }
     GumboAttribute *href;
     if (node->v.element.tag == GUMBO_TAG_A &&
-        (href = gumbo_get_attribute(&node->v.element.attributes, "href"))) {
+        (href = gumbo_get_attribute(&node->v.element.attributes, HREF))) {
         std::string a = href->value;
-        if (a.find("http") == 0) {
+        if (a.find(HTTP) == 0) {
             std::cout << href->value << std::endl;
             v->push_back(href->value);
         }
@@ -100,15 +100,15 @@ void Crawler::printer() {
     std::ofstream fout;
     fout.open(_output);
     if (!fout) {
-        std::cout << "error opening output file!" << std::endl;
+        std::cout << ERR_OPEN_FILE << std::endl;
         return;
     }
-    if (_images.empty()) fout << "no images found" << std::endl;
+    if (_images.empty()) fout << NO_IMAGES << std::endl;
     else
     {
         unsigned count = 1;
         for (auto const &i : _images) {
-            fout << count << " - " << i << std::endl;
+            fout << count << SPACE_DASH_SPACE << i << std::endl;
             ++count;
         }
     }
@@ -122,16 +122,16 @@ void Crawler::search_for_img(GumboNode *node, const std::string &url) {
     }
     if (node->v.element.tag == GUMBO_TAG_IMG) {
         GumboAttribute *img;
-        img = gumbo_get_attribute(&node->v.element.attributes, "src");
+        img = gumbo_get_attribute(&node->v.element.attributes, SRC);
         if (!img) return;
         std::string tmp = img->value;
-        if (tmp.find("//") == 0) {
-            tmp = "http:" + tmp;
+        if (tmp.find(DSLASH) == 0) {
+            tmp = HTTP_COLON + tmp;
         }
-        if (tmp.find('/') != 0) {
-            if ((tmp.find("http:") != 0) && (tmp.find("https:") != 0)) {
+        if (tmp.find(SLASH) != 0) {
+            if ((tmp.find(HTTP_COLON) != 0) && (tmp.find(HTTPS_COLON) != 0)) {
                 std::string host = get_host_from_link(url);
-                tmp = "http://" + host + "//" + tmp;
+                tmp = HTTP_COLON_DSLASH + host + DSLASH + tmp;
             }
             std::vector<std::string>::iterator it1;
             cs.lock();
